@@ -1,0 +1,32 @@
+
+REGISTRATION
+1. DVD
+2. VCD
+3. Tape
+Enter media code: 1
+Type: DVD
+Enter title: ANA
+1. Horror
+2. Scifi
+3. Drama
+4. Comedy
+5. Cartoons
+Enter category: 5
+Enter minutes: 60
+1. Rental
+2. Sales
+Enter transaction type: 1
+Enter price: 1000.0
+Register another? (yes/no): no
+
+REPORTS
+For Rent: 1
+For Sale: 0
+VCD Total: 0
+DVD Total: 1
+Tape Total: 0
+Horror Movies: 0
+Scifi Movies: 0
+Drama Movies: 0
+Comedy Movies: 0
+Cartoons: 1
