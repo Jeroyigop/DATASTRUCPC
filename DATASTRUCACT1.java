@@ -13,7 +13,7 @@ public class DATASTRUCACT1 {
 
         String answer;
 
-        do {
+        do {    
             
             System.out.println("\nREGISTRATION");
             System.out.println("1. DVD");
