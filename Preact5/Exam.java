@@ -1,4 +1,4 @@
-package activity5;
+package Preact5;
 
 import java.util.Scanner;
 

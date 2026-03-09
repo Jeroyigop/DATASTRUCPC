@@ -1,4 +1,4 @@
-package activity4;
+package Preact4;
 import java.util.Scanner;
 
 public class DATASTRUCACT4 {

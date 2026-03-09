@@ -1,4 +1,4 @@
-package activity2;
+package Preact2;
 
     import java.util.Scanner;
 

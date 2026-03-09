@@ -73,4 +73,4 @@ public class Exam {
         System.out.println("Duration: " + duration + " minutes");
         System.out.println("Room: " + room);
     }
-}, 
+}

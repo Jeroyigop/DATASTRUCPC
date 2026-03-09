@@ -1,4 +1,4 @@
-package activity7;
+package Preact7;
 import java.util.*;
 import java.io.*;
 
