@@ -2,127 +2,133 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>VIP Slot Machine</title>
+<title>VIP 3D Slot Machine - Cash System</title>
 <style>
-    body {
-        background: radial-gradient(circle at center, #111, #000);
-        color: gold;
-        font-family: Arial, sans-serif;
-        text-align: center;
-    }
-
-    h1 {
-        text-shadow: 0 0 20px gold;
-    }
-
-    .slot-container {
-        display: flex;
-        justify-content: center;
-        margin: 40px 0;
-        gap: 15px;
-    }
-
-    .reel {
-        width: 100px;
-        height: 100px;
-        border: 3px solid gold;
-        border-radius: 15px;
-        background: #111;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 50px;
-        box-shadow: 0 0 15px gold;
-    }
-
-    .spin {
-        animation: spin 0.1s linear infinite;
-    }
-
-    @keyframes spin {
-        0% { transform: translateY(-10px); }
-        100% { transform: translateY(10px); }
-    }
-
-    button {
-        background: gold;
-        border: none;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 10px;
-        cursor: pointer;
-        margin: 5px;
-        font-weight: bold;
-    }
-
-    button:hover {
-        background: orange;
-    }
-
-    .info {
-        margin-top: 10px;
-        font-size: 18px;
-    }
-
-    .win {
-        color: lime;
-        text-shadow: 0 0 10px lime;
-    }
-
-    .lose {
-        color: red;
-    }
+body {
+    background: radial-gradient(circle at center, #111, #000);
+    color: gold;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    perspective: 1000px;
+}
+h1 {
+    text-shadow: 0 0 30px gold;
+    margin-top: 20px;
+}
+.slot-container {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0;
+    gap: 15px;
+}
+.reel {
+    width: 120px;
+    height: 120px;
+    border: 4px solid gold;
+    border-radius: 15px;
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    box-shadow: 0 0 25px gold, inset 0 0 15px #222;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+.reel .fruit {
+    display: inline-block;
+    transform: rotateX(0deg);
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+.reel.spin .fruit {
+    animation: spinFruit 0.6s linear infinite;
+}
+@keyframes spinFruit {
+    0% { transform: rotateX(0deg); text-shadow: 0 0 5px gold; }
+    50% { transform: rotateX(360deg); text-shadow: 0 0 20px lime; }
+    100% { transform: rotateX(720deg); text-shadow: 0 0 5px gold; }
+}
+button {
+    background: gold;
+    border: none;
+    padding: 12px 25px;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 5px;
+    font-weight: bold;
+    box-shadow: 0 0 15px gold;
+}
+button:hover {
+    background: orange;
+}
+input[type="number"] {
+    padding: 5px;
+    font-size: 16px;
+    width: 100px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 2px solid gold;
+    text-align: center;
+    background: #222;
+    color: white;
+}
+.info {
+    margin-top: 15px;
+    font-size: 18px;
+}
+.win { color: lime; text-shadow: 0 0 10px lime; font-size: 22px;}
+.lose { color: red; }
 </style>
 </head>
 <body>
 
-<h1>💎 VIP SLOT MACHINE 💎</h1>
+<h1>💎 VIP 3D SLOT MACHINE 💎</h1>
 
 <div class="slot-container">
-    <div class="reel" id="reel1">🍒</div>
-    <div class="reel" id="reel2">🍋</div>
-    <div class="reel" id="reel3">🍉</div>
+    <div class="reel" id="reel1"><span class="fruit">🍒</span></div>
+    <div class="reel" id="reel2"><span class="fruit">🍋</span></div>
+    <div class="reel" id="reel3"><span class="fruit">🍉</span></div>
 </div>
 
 <div>
-    <button onclick="changeBet(-10)">- Bet</button>
+    🎯 Bet: <input type="number" id="betInput" value="10" min="10">
     <button onclick="spin()">🎰 SPIN</button>
-    <button onclick="changeBet(10)">+ Bet</button>
 </div>
 
-<div class="info">💰 Balance: ₱<span id="balance">500</span></div>
-<div class="info">🎯 Bet: ₱<span id="bet">10</span></div>
+<div>
+    💰 Balance: ₱<span id="balance">500</span>
+</div>
+
+<div>
+    💸 Cash In: <input type="number" id="cashInAmount" value="100" min="1">
+    <button onclick="cashIn()">Deposit</button>
+    💵 Cash Out: <input type="number" id="cashOutAmount" value="100" min="1">
+    <button onclick="cashOut()">Withdraw</button>
+</div>
+
 <div class="info" id="result"></div>
 
 <script>
 const symbols = ["🍒","🍋","🍉","⭐","💎","7️⃣"];
-
 let balance = 500;
-let bet = 10;
 
-function getRandomSymbol() {
-    return symbols[Math.floor(Math.random() * symbols.length)];
-}
-
-function changeBet(amount) {
-    bet += amount;
-
-    if (bet < 10) bet = 10;
-    if (bet > balance) bet = balance;
-
-    updateUI();
+function updateUI() {
+    document.getElementById("balance").textContent = balance;
 }
 
 function spin() {
+    let bet = parseInt(document.getElementById("betInput").value);
+    if (bet < 10) bet = 10;
     if (bet > balance) {
-        showResult("⚠️ Not enough balance", "lose");
+        showResult("⚠️ Not enough balance to spin", "lose");
         return;
     }
 
     balance -= bet;
     updateUI();
 
-    let reels = [
+    const reels = [
         document.getElementById("reel1"),
         document.getElementById("reel2"),
         document.getElementById("reel3")
@@ -131,48 +137,58 @@ function spin() {
     reels.forEach(r => r.classList.add("spin"));
 
     setTimeout(() => {
-        let results = reels.map(r => {
-            let sym = getRandomSymbol();
-            r.textContent = sym;
+        const results = reels.map(r => {
+            const fruit = r.querySelector(".fruit");
+            const sym = symbols[Math.floor(Math.random() * symbols.length)];
+            fruit.textContent = sym;
             r.classList.remove("spin");
             return sym;
         });
 
-        checkWin(results);
+        // Check win
+        let multiplier = 0;
+        if (results[0] === results[1] && results[1] === results[2]) multiplier = 10;
+        else if (results[0] === results[1] || results[1] === results[2]) multiplier = 3;
+
+        const winnings = bet * multiplier;
+        balance += winnings;
+
+        if (multiplier > 0) showResult(`🎉 You win ₱${winnings}!`, "win");
+        else showResult("❌ No win", "lose");
+
+        updateUI();
     }, 1000);
 }
 
-function checkWin(results) {
-    let multiplier = 0;
-
-    if (results[0] === results[1] && results[1] === results[2]) {
-        multiplier = 10; // jackpot
-        showResult("🎉 JACKPOT x10!", "win");
+function cashIn() {
+    const amount = parseInt(document.getElementById("cashInAmount").value);
+    if (amount > 0) {
+        balance += amount;
+        updateUI();
+        showResult(`💰 Deposited ₱${amount}`, "win");
+    } else {
+        showResult("⚠️ Invalid deposit", "lose");
     }
-    else if (results[0] === results[1] || results[1] === results[2]) {
-        multiplier = 3;
-        showResult("✨ Win x3!", "win");
-    }
-    else {
-        showResult("❌ No win", "lose");
-    }
+}
 
-    let winnings = bet * multiplier;
-    balance += winnings;
-
-    updateUI();
+function cashOut() {
+    const amount = parseInt(document.getElementById("cashOutAmount").value);
+    if (amount > 0 && amount <= balance) {
+        balance -= amount;
+        updateUI();
+        showResult(`💵 Withdrew ₱${amount}`, "win");
+    } else {
+        showResult("⚠️ Invalid withdrawal", "lose");
+    }
 }
 
 function showResult(text, type) {
-    let result = document.getElementById("result");
+    const result = document.getElementById("result");
     result.innerHTML = text;
     result.className = "info " + type;
 }
 
-function updateUI() {
-    document.getElementById("balance").textContent = balance;
-    document.getElementById("bet").textContent = bet;
-}
+updateUI();
 </script>
 
 </body>

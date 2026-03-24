@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VIP Slot Machine - Betting Pool</title>
+<style>
+body {
+    margin:0;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: radial-gradient(circle at top left,#111,#000);
+    color:#f5f5f5;
+    text-align:center;
+}
+h1{color:gold;text-shadow:0 0 20px gold;}
+.container{max-width:900px;margin:0 auto;padding:20px;}
+.account-summary, .slot-container{display:flex;justify-content:center;gap:20px;margin-bottom:30px;}
+.account-summary div, .reel{background:#222;padding:15px;border-radius:15px;box-shadow:0 0 25px gold,inset 0 0 10px #555;}
+.account-summary div{flex:1;}
+.reel{width:120px;height:120px;font-size:60px;display:flex;align-items:center;justify-content:center;}
+.reel .fruit{display:inline-block;transition:transform 0.3s ease;}
+.reel.spin .fruit{animation:spinFruit 0.6s linear infinite;}
+@keyframes spinFruit{0%{transform:rotateX(0deg);}50%{transform:rotateX(360deg);}100%{transform:rotateX(720deg);}}
+button{background:gold;border:none;padding:10px 25px;font-size:16px;border-radius:10px;cursor:pointer;font-weight:bold;margin:5px;}
+button:hover{background:orange;}
+input[type="number"]{padding:5px;font-size:16px;width:100px;margin:5px;border-radius:5px;border:2px solid gold;text-align:center;background:#222;color:white;}
+.info{font-size:18px;margin-top:10px;}
+.win{color:lime;text-shadow:0 0 10px lime;}
+.lose{color:red;}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>💎 VIP Slot Machine - Betting Pool 💎</h1>
+
+<!-- BANK SUMMARY -->
+<div class="account-summary">
+    <div>
+        <h2 id="bankBalance">₱50,000</h2>
+        <p>Main Bank Balance</p>
+    </div>
+    <div>
+        <h2 id="slotBalance">₱0</h2>
+        <p>Slot Playable Balance</p>
+    </div>
+</div>
+
+<!-- CASH IN / CASH OUT -->
+<div>
+    Cash In: <input type="number" id="cashInAmount" value="100">
+    <button onclick="cashIn()">→</button>
+    Cash Out: <input type="number" id="cashOutAmount" value="100">
+    <button onclick="cashOut()">←</button>
+</div>
+
+<!-- SLOT MACHINE -->
+<h2>🎰 Slot Machine</h2>
+<div class="slot-container">
+    <div class="reel" id="reel1"><span class="fruit">🍒</span></div>
+    <div class="reel" id="reel2"><span class="fruit">🍋</span></div>
+    <div class="reel" id="reel3"><span class="fruit">🍉</span></div>
+</div>
+<div>
+    Bet: <input type="number" id="betInput" value="50" min="10">
+    <button onclick="spin()">SPIN</button>
+</div>
+<div class="info" id="slotResult"></div>
+</div>
+
+<script>
+// --- INITIAL BALANCES ---
+let bankBalance = 50000; // untouchable for betting
+let slotBalance = 0;     // betting pool
+
+// --- UPDATE UI ---
+function updateUI(){
+    document.getElementById('bankBalance').textContent = `₱${bankBalance.toLocaleString()}`;
+    document.getElementById('slotBalance').textContent = `₱${slotBalance.toLocaleString()}`;
+}
+
+// --- CASH IN / CASH OUT ---
+function cashIn(){
+    let amount = parseInt(document.getElementById('cashInAmount').value);
+    if(amount>0 && amount<=bankBalance){
+        bankBalance -= amount;
+        slotBalance += amount;
+        updateUI();
+        alert(`Cashed in ₱${amount} to slot balance`);
+    } else { alert("Invalid cash in"); }
+}
+
+function cashOut(){
+    let amount = parseInt(document.getElementById('cashOutAmount').value);
+    if(amount < 100){
+        alert("Minimum cash out is ₱100!");
+        return;
+    }
+    if(amount>0 && amount<=slotBalance){
+        slotBalance -= amount;
+        bankBalance += amount;
+        updateUI();
+        alert(`Cashed out ₱${amount} back to bank`);
+    } else {
+        alert("Invalid cash out");
+    }
+}
+
+// --- SLOT MACHINE ---
+const symbols = ["🍒","🍋","🍉","⭐","💎","7️⃣"];
+function spin(){
+    let bet = parseInt(document.getElementById('betInput').value);
+    if(bet>slotBalance){
+        document.getElementById('slotResult').textContent = "⚠️ Not enough slot balance!";
+        return;
+    }
+    slotBalance -= bet;
+    updateUI();
+
+    const reels = [document.getElementById("reel1"),document.getElementById("reel2"),document.getElementById("reel3")];
+    reels.forEach(r=>r.classList.add("spin"));
+
+    setTimeout(()=>{
+        const results = reels.map(r=>{
+            const fruit = r.querySelector(".fruit");
+            const sym = symbols[Math.floor(Math.random()*symbols.length)];
+            fruit.textContent = sym;
+            r.classList.remove("spin");
+            return sym;
+        });
+
+        let multiplier = 0;
+        if(results[0]===results[1] && results[1]===results[2]) multiplier = 10;
+        else if(results[0]===results[1] || results[1]===results[2]) multiplier = 3;
+
+        let winnings = bet*multiplier;
+        slotBalance += winnings;
+        updateUI();
+
+        if(multiplier>0) document.getElementById('slotResult').textContent = `🎉 You win ₱${winnings}!`;
+        else document.getElementById('slotResult').textContent = "❌ No win";
+    },1000);
+}
+
+updateUI();
+</script>
+</body>
+</html>
