@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VIP Slot Machine</title>
+<style>
+    body {
+        background: radial-gradient(circle at center, #111, #000);
+        color: gold;
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+
+    h1 {
+        text-shadow: 0 0 20px gold;
+    }
+
+    .slot-container {
+        display: flex;
+        justify-content: center;
+        margin: 40px 0;
+        gap: 15px;
+    }
+
+    .reel {
+        width: 100px;
+        height: 100px;
+        border: 3px solid gold;
+        border-radius: 15px;
+        background: #111;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+        box-shadow: 0 0 15px gold;
+    }
+
+    .spin {
+        animation: spin 0.1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: translateY(-10px); }
+        100% { transform: translateY(10px); }
+    }
+
+    button {
+        background: gold;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 10px;
+        cursor: pointer;
+        margin: 5px;
+        font-weight: bold;
+    }
+
+    button:hover {
+        background: orange;
+    }
+
+    .info {
+        margin-top: 10px;
+        font-size: 18px;
+    }
+
+    .win {
+        color: lime;
+        text-shadow: 0 0 10px lime;
+    }
+
+    .lose {
+        color: red;
+    }
+</style>
+</head>
+<body>
+
+<h1>💎 VIP SLOT MACHINE 💎</h1>
+
+<div class="slot-container">
+    <div class="reel" id="reel1">🍒</div>
+    <div class="reel" id="reel2">🍋</div>
+    <div class="reel" id="reel3">🍉</div>
+</div>
+
+<div>
+    <button onclick="changeBet(-10)">- Bet</button>
+    <button onclick="spin()">🎰 SPIN</button>
+    <button onclick="changeBet(10)">+ Bet</button>
+</div>
+
+<div class="info">💰 Balance: ₱<span id="balance">500</span></div>
+<div class="info">🎯 Bet: ₱<span id="bet">10</span></div>
+<div class="info" id="result"></div>
+
+<script>
+const symbols = ["🍒","🍋","🍉","⭐","💎","7️⃣"];
+
+let balance = 500;
+let bet = 10;
+
+function getRandomSymbol() {
+    return symbols[Math.floor(Math.random() * symbols.length)];
+}
+
+function changeBet(amount) {
+    bet += amount;
+
+    if (bet < 10) bet = 10;
+    if (bet > balance) bet = balance;
+
+    updateUI();
+}
+
+function spin() {
+    if (bet > balance) {
+        showResult("⚠️ Not enough balance", "lose");
+        return;
+    }
+
+    balance -= bet;
+    updateUI();
+
+    let reels = [
+        document.getElementById("reel1"),
+        document.getElementById("reel2"),
+        document.getElementById("reel3")
+    ];
+
+    reels.forEach(r => r.classList.add("spin"));
+
+    setTimeout(() => {
+        let results = reels.map(r => {
+            let sym = getRandomSymbol();
+            r.textContent = sym;
+            r.classList.remove("spin");
+            return sym;
+        });
+
+        checkWin(results);
+    }, 1000);
+}
+
+function checkWin(results) {
+    let multiplier = 0;
+
+    if (results[0] === results[1] && results[1] === results[2]) {
+        multiplier = 10; // jackpot
+        showResult("🎉 JACKPOT x10!", "win");
+    }
+    else if (results[0] === results[1] || results[1] === results[2]) {
+        multiplier = 3;
+        showResult("✨ Win x3!", "win");
+    }
+    else {
+        showResult("❌ No win", "lose");
+    }
+
+    let winnings = bet * multiplier;
+    balance += winnings;
+
+    updateUI();
+}
+
+function showResult(text, type) {
+    let result = document.getElementById("result");
+    result.innerHTML = text;
+    result.className = "info " + type;
+}
+
+function updateUI() {
+    document.getElementById("balance").textContent = balance;
+    document.getElementById("bet").textContent = bet;
+}
+</script>
+
+</body>
+</html>
